@@ -195,6 +195,15 @@ locals {
       )
     ]
   ])
+
+  root_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+
+  key_administrators = coalescelist(
+    var.kms_key_administrators,
+    contains([data.aws_iam_session_context.current.issuer_arn], local.root_arn) ?
+    [data.aws_iam_session_context.current.issuer_arn] :
+    [data.aws_iam_session_context.current.issuer_arn, local.root_arn]
+  )
 }
 
 resource "aws_eks_access_entry" "this" {
@@ -245,7 +254,7 @@ module "kms" {
   # Policy
   enable_default_policy     = var.kms_key_enable_default_policy
   key_owners                = var.kms_key_owners
-  key_administrators        = coalescelist(var.kms_key_administrators, [data.aws_iam_session_context.current.issuer_arn])
+  key_administrators        = local.key_administrators
   key_users                 = concat([local.cluster_role], var.kms_key_users)
   key_service_users         = var.kms_key_service_users
   source_policy_documents   = var.kms_key_source_policy_documents

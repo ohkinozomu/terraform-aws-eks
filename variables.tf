@@ -205,7 +205,7 @@ variable "kms_key_owners" {
 }
 
 variable "kms_key_administrators" {
-  description = "A list of IAM ARNs for [key administrators](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-administrators). If no value is provided, the current caller identity is used to ensure at least one key admin is available"
+  description = "A list of IAM ARNs for [key administrators](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-administrators). If no value is provided, the root user and the current caller identity are used"
   type        = list(string)
   default     = []
 }
